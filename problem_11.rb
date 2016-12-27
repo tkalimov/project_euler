@@ -1,3 +1,4 @@
+require 'byebug'
 def make_array(str)
 	first_array = str.split("\n")
 	grid = Array.new
@@ -5,7 +6,8 @@ def make_array(str)
 	return grid
 end 
 
-str = "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
+str = 
+"08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
 49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00
 81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65
 52 70 95 23 04 60 11 42 69 24 68 56 01 32 56 71 37 02 36 91
@@ -26,13 +28,19 @@ str = "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
 20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
 01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48"
 
-arr = make_array(str)
+grid = make_array(str)
 
-def check_down(grid)
-	i = 0
-	while i <20 do 
-		grid.
-	end 
+def create_diagonals(grid)
+	output = Array.new
+	grid.each_with_index do |arr, vertical_index|
+		arr.each_with_index do |number, horizontal_index|
+			if vertical_index < 17 && horizontal_index < 17
+				diagonal = [grid[vertical_index][horizontal_index], grid[vertical_index+1][horizontal_index+1], grid[vertical_index+2][horizontal_index+2], grid[vertical_index+3][horizontal_index+3]]
+				output.push(diagonal)	
+			end 
+		end 
+	end  
+	return output
 end 
 
 def largest_four_consecutive(array)
@@ -41,6 +49,42 @@ def largest_four_consecutive(array)
 	while i <= array.length do 
 		product = array[i-3..i].inject(:*)
 		largest_product = product if product > largest_product
+		i +=1
 	end 
-
+	return largest_product
 end 
+
+def transpose(grid)
+	i = 0 
+	new_grid = Array.new
+	while i < grid.length do
+		grid.each_with_index do |arr, index|
+			new_grid[i] ||= Array.new
+			new_grid[i][index] = arr[i]
+		end 
+		i += 1
+	end 
+	return new_grid
+end 
+
+def reverse_rows(grid)
+	output = Array.new
+	grid.each_with_index do |arr, index|
+		output[index] = arr.reverse
+	end 
+	return output
+end 
+
+transposed_grid = transpose(grid)
+reversed_grid = reverse_rows(grid)
+normal_diagonals_array = create_diagonals(grid)
+reversed_diagonals_array = create_diagonals(reversed_grid)
+
+arrays_to_check = grid + transposed_grid + normal_diagonals_array + reversed_diagonals_array
+largest_product = 0
+arrays_to_check.each do |arr|
+	product = largest_four_consecutive(arr)
+	largest_product = product if product > largest_product
+end 
+puts largest_product
+puts 'end'
